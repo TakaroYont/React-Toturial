@@ -20,25 +20,28 @@ class Board extends React.Component {
         );
     }
 
+    renderBoard({rowSize, colSize}) {
+        const board = [];
+        for (let rowIndex = 0; rowIndex < rowSize; rowIndex++) {
+            let squareCols = [];
+            for (let colIndex = 0; colIndex < colSize; colIndex++) {
+                let squareIndex = (rowIndex * colSize) + colIndex;
+                console.log(squareIndex);
+                squareCols.push(this.renderSquare(squareIndex, rowIndex, colIndex));
+            }
+            board.push(
+                <div key={rowIndex} className="board-row">
+                    {squareCols}
+                </div>
+            );
+        }
+        return board;
+    }
+
     render() {
         return (
             <div>
-                {/* <div className="status">{status}</div> */}
-                <div className="board-row">
-                    {this.renderSquare(0, 0, 0)}
-                    {this.renderSquare(1, 0, 1)}
-                    {this.renderSquare(2, 0, 2)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(3, 1, 0)}
-                    {this.renderSquare(4, 1, 1)}
-                    {this.renderSquare(5, 1, 2)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(6, 2, 0)}
-                    {this.renderSquare(7, 2, 1)}
-                    {this.renderSquare(8, 2, 2)}
-                </div>
+                {this.renderBoard(this.props.boardSize)}
             </div>
         );
     }
@@ -54,6 +57,10 @@ class Game extends React.Component {
             }],
             xIsNext: true,
             stepNumber: 0,
+            boardSize: {
+                rowSize: 3,
+                colSize: 3,
+            }
         }
     }
 
@@ -105,6 +112,7 @@ class Game extends React.Component {
                 <div className="game-board">
                     <Board
                         squares={current.squares}
+                        boardSize={this.state.boardSize}
                         onClick={(i, row, col) => this.handleClick(i, row, col)}
                     />
                 </div>
