@@ -60,7 +60,8 @@ class Game extends React.Component {
             boardSize: {
                 rowSize: 3,
                 colSize: 3,
-            }
+            },
+            historyOrderAsc: true,
         }
     }
 
@@ -87,10 +88,17 @@ class Game extends React.Component {
         })
     }
 
+    reverseHistoryOrder() {
+        this.setState({
+            historyOrderAsc: !this.state.historyOrderAsc,
+        })
+    }
+
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
+        const historyOrder = this.state.historyOrderAsc;
 
         const moves = history.map((step, move) => {
             const coordinate = '(' + step.coordinate.col + ', ' + step.coordinate.row + ')';
@@ -104,8 +112,10 @@ class Game extends React.Component {
                 </li>
             );
         })
+        if (!historyOrder) moves.reverse();
 
         let status = winner ? "Winner: " + winner : "Next player: " + (this.state.xIsNext ? "X" : "O");
+        let historyOrderStatus = historyOrder ? "Ascending" : "Descending";
 
         return (
             <div className="game">
@@ -118,6 +128,7 @@ class Game extends React.Component {
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
+                    <div>History order: <button onClick={()=>this.reverseHistoryOrder()}>{historyOrderStatus}</button></div>
                     <ol>{moves}</ol>
                 </div>
             </div>
