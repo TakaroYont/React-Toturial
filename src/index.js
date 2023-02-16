@@ -90,7 +90,10 @@ class Game extends React.Component {
             const desc = move ? 'Go to move #' + move + ' ' + coordinate : 'Go to game start';
             return (
                 <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                    <button className="jump-to"
+                            onClick={() => this.jumpTo(move)}>
+                        {desc}
+                    </button>
                 </li>
             );
         })
