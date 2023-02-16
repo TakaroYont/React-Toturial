@@ -115,6 +115,7 @@ class Game extends React.Component {
         if (!historyOrder) moves.reverse();
 
         let status = winner ? "Winner: " + winner : "Next player: " + (this.state.xIsNext ? "X" : "O");
+        if (!winner && this.state.stepNumber === 9) status = "Draw game";
         let historyOrderStatus = historyOrder ? "Ascending" : "Descending";
 
         return (
