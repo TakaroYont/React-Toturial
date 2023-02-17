@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 
 function Square(props) {
+    const className = props.highlight ? "square highlight" : "square";
     return (
-        <button className="square" onClick={props.onClick}>
+        <button className={className} key={props.value}
+                onClick={props.onClick}>
             {props.value}
         </button>
     );
@@ -12,10 +14,12 @@ function Square(props) {
 
 class Board extends React.Component {
     renderSquare(i, row, col) {
+        const highlight = this.props.lines.some(item => item === i);
         return (
             <Square
                 value={this.props.squares[i]}
                 onClick={() => this.props.onClick(i, row, col)}
+                highlight={highlight}
             />
         );
     }
@@ -26,7 +30,6 @@ class Board extends React.Component {
             let squareCols = [];
             for (let colIndex = 0; colIndex < colSize; colIndex++) {
                 let squareIndex = (rowIndex * colSize) + colIndex;
-                console.log(squareIndex);
                 squareCols.push(this.renderSquare(squareIndex, rowIndex, colIndex));
             }
             board.push(
@@ -69,7 +72,8 @@ class Game extends React.Component {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
-        if (calculateWinner(squares) || squares[i]) return;
+        const {winner} = calculateWinner(squares);
+        if (winner || squares[i]) return;
         squares[i] = this.state.xIsNext ? "X" : "O";
         this.setState({
             history: history.concat([{
@@ -97,7 +101,7 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
+        const {lines, winner} = calculateWinner(current.squares);
         const historyOrder = this.state.historyOrderAsc;
 
         const moves = history.map((step, move) => {
@@ -124,12 +128,14 @@ class Game extends React.Component {
                     <Board
                         squares={current.squares}
                         boardSize={this.state.boardSize}
+                        lines={lines}
                         onClick={(i, row, col) => this.handleClick(i, row, col)}
                     />
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <div>History order: <button onClick={()=>this.reverseHistoryOrder()}>{historyOrderStatus}</button></div>
+                    <div>History order: <button onClick={() => this.reverseHistoryOrder()}>{historyOrderStatus}</button>
+                    </div>
                     <ol>{moves}</ol>
                 </div>
             </div>
@@ -156,8 +162,9 @@ function calculateWinner(squares) {
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            return {lines: lines[i], winner: squares[a]};
+            //return squares[a];
         }
     }
-    return null;
+    return {lines: [], winner: null};
 }
